@@ -1,0 +1,201 @@
+\begin{thebibliography}{10}
+
+\bibitem{Bartlett2005Recognizing}
+M.~S Bartlett, Gwen Littlewort, M~Frank, and C~Lainscsek.
+\newblock Recognizing facial expression: machine learning and application to
+  spontaneous behavior.
+\newblock In {\em IEEE Computer Society Conference on Computer Vision and
+  Pattern Recognition}, pages 568--573, 2005.
+
+\bibitem{LBP2014}
+C~Frelicot C~Silva, T~Bouwmans.
+\newblock An extended center-symmetric local binary pattern for background
+  modeling and subtraction in videos.
+\newblock {\em Visapp}, 2015.
+
+\bibitem{Chen2014Joint}
+Dong Chen, Shaoqing Ren, Yichen Wei, Xudong Cao, and Jian Sun.
+\newblock Joint cascade face detection and alignment.
+\newblock In {\em European Conference on Computer Vision}, pages 109--122,
+  2014.
+
+\bibitem{Dalal2005Histograms}
+Navneet Dalal and Bill Triggs.
+\newblock Histograms of oriented gradients for human detection.
+\newblock In {\em IEEE Conference on Computer Vision and Pattern Recognition},
+  pages 886--893, 2005.
+
+\bibitem{visual1980}
+JG~Daugman.
+\newblock Two-dimensional spectral analysis of cortical receptive field
+  profile.
+\newblock {\em Vision Research}, 1980.
+
+\bibitem{Dhall2016EmotiW}
+Abhinav Dhall, Roland Goecke, Jyoti Joshi, Jesse Hoey, and Tom Gedeon.
+\newblock Emotiw 2016: video and group-level emotion recognition challenges.
+\newblock In {\em ACM International Conference on Multimodal Interaction},
+  pages 427--432, 2016.
+
+\bibitem{Fan2016Video}
+Yin Fan, Xiangju Lu, Dian Li, and Yuanliu Liu.
+\newblock Video-based emotion recognition using cnn-rnn and c3d hybrid
+  networks.
+\newblock In {\em ACM International Conference on Multimodal Interaction},
+  pages 445--450, 2016.
+
+\bibitem{Goodfeli-et-al-2013}
+Ian Goodfellow, Dumitru Erhan, Pierre-Luc Carrier, Aaron Courville, Mehdi
+  Mirza, Ben Hamner, Will Cukierski, Yichuan Tang, David Thaler, Dong-Hyun Lee,
+  Yingbo Zhou, Chetan Ramaiah, Fangxiang Feng, Ruifan Li, Xiaojie Wang,
+  Dimitris Athanasakis, John Shawe-Taylor, Maxim Milakov, John Park, Radu
+  Ionescu, Marius Popescu, Cristian Grozea, James Bergstra, Jingjing Xie,
+  Lukasz Romaszko, Bing Xu, Zhang Chuang, and Yoshua Bengio.
+\newblock Challenges in representation learning: A report on three machine
+  learning contests, 2013.
+
+\bibitem{Jia2014Caffe}
+Jia, Yangqing, Shelhamer, Evan, Donahue, Jeff, Karayev, Sergey, Long, and
+  Jonathan.
+\newblock Caffe: Convolutional architecture for fast feature embedding.
+\newblock {\em Eprint Arxiv}, pages 675--678, 2014.
+
+\bibitem{Kahou2015Recurrent}
+Samira~Ebrahimi Kahou, Vincent Michalski, Kishore Konda, Roland Memisevic, and
+  Christopher Pal.
+\newblock Recurrent neural networks for emotion recognition in video.
+\newblock 13(5):467--474, 2015.
+
+\bibitem{Kahou2013Combining}
+Samira~Ebrahimi Kahou, Christopher Pal, Xavier Bouthillier, Pierre Froumenty,
+  ?aglar G¨¹l?ehre, Roland Memisevic, Pascal Vincent, Aaron Courville, Yoshua
+  Bengio, and Raul~Chandias Ferrari.
+\newblock Combining modality specific deep neural networks for emotion
+  recognition in video.
+\newblock In {\em ACM on International Conference on Multimodal Interaction},
+  pages 543--550, 2013.
+
+\bibitem{Kaya2017Video}
+Heysem Kaya, Furkan G¨¹rp?nar, and Albert~Ali Salah.
+\newblock Video-based emotion recognition in the wild using deep transfer
+  learning and score fusion *.
+\newblock {\em Image and Vision Computing}, 2017.
+
+\bibitem{Kaya2015Contrasting}
+Heysem Kaya, Furkan Rpinar, Sadaf Afshar, and Albert~Ali Salah.
+\newblock Contrasting and combining least squares based learners for emotion
+  recognition in the wild.
+\newblock In {\em ACM on International Conference on Multimodal Interaction},
+  pages 459--466, 2015.
+
+\bibitem{Kim2016Hierarchical}
+Bo~Kyeong Kim, Jihyeon Roh, Suh~Yeon Dong, and Soo~Young Lee.
+\newblock Hierarchical committee of deep convolutional neural networks for
+  robust facial expression recognition.
+\newblock {\em Journal on Multimodal User Interfaces}, 10(2):173--189, 2016.
+
+\bibitem{Chen2007TFEID}
+YuShiuan~Yen LiFen~Chen.
+\newblock Taiwanese facial expression image database.
+\newblock 2007.
+
+\bibitem{Liu2014Deeply}
+Mengyi Liu, Shaoxin Li, Shiguang Shan, Ruiping Wang, and Xilin Chen.
+\newblock {\em Deeply Learning Deformable Facial Action Parts Model for Dynamic
+  Expression Analysis}.
+\newblock Springer International Publishing, 2014.
+
+\bibitem{Liu2016Video}
+Mengyi Liu, Ruiping Wang, Shaoxin Li, Zhiwu Huang, Shiguang Shan, and Xilin
+  Chen.
+\newblock Video modeling and learning on riemannian manifold for emotion
+  recognition in the wild.
+\newblock {\em Journal on Multimodal User Interfaces}, 10(2):113--124, 2016.
+
+\bibitem{Lowe2004Distinctive}
+David~G Lowe.
+\newblock {\em Distinctive Image Features from Scale-Invariant Keypoints}.
+\newblock Kluwer Academic Publishers, 2004.
+
+\bibitem{Lucey2010The}
+Patrick Lucey, Jeffrey~F. Cohn, Takeo Kanade, Jason Saragih, Zara Ambadar, and
+  Iain Matthews.
+\newblock The extended cohn-kanade dataset (ck+): A complete dataset for action
+  unit and emotion-specified expression.
+\newblock In {\em Computer Vision and Pattern Recognition Workshops}, pages
+  94--101, 2010.
+
+\bibitem{Lundqvist1998The}
+Daniel Lundqvist, Anders Flykt, and Arne Ohman.
+\newblock The karolinska directed emotional faces (kdef).
+\newblock 1998.
+
+\bibitem{Lyons2002Automatic}
+M.~J. Lyons, J.~Budynek, and S.~Akamatsu.
+\newblock Automatic classification of single facial images.
+\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  21(12):1357--1362, 2002.
+
+\bibitem{Ng2015Deep}
+Hong~Wei Ng, Viet~Dung Nguyen, Vassilios Vonikakis, and Stefan Winkler.
+\newblock Deep learning for emotion recognition on small datasets using
+  transfer learning.
+\newblock In {\em ACM on International Conference on Multimodal Interaction},
+  pages 443--449, 2015.
+
+\bibitem{VGGFace}
+A~Zisserman OM~Parkhi, A~Vedaldi.
+\newblock Deep face recognition.
+\newblock {\em British Machine Vision Conference}, 2015.
+
+\bibitem{Ramanan2012Face}
+D.~Ramanan and Xiangxin Zhu.
+\newblock Face detection, pose estimation, and landmark localization in the
+  wild.
+\newblock In {\em IEEE Conference on Computer Vision and Pattern Recognition},
+  pages 2879--2886, 2012.
+
+\bibitem{Razavian2014CNN}
+Ali~Sharif Razavian, Hossein Azizpour, Josephine Sullivan, and Stefan Carlsson.
+\newblock Cnn features off-the-shelf: An astounding baseline for recognition.
+\newblock In {\em Computer Vision and Pattern Recognition Workshops}, pages
+  512--519, 2014.
+
+\bibitem{Saeed2012Effective}
+A~Saeed, A~Al-Hamadi, R~Niese, and M~Elzobi.
+\newblock Effective geometric features for human emotion recognition.
+\newblock In {\em IEEE International Conference on Signal Processing}, pages
+  623--627, 2012.
+
+\bibitem{Wang2013Capturing}
+Ziheng Wang, Shangfei Wang, and Qiang Ji.
+\newblock Capturing complex spatio-temporal relations among facial muscles for
+  facial expression recognition.
+\newblock 9(4):3422--3429, 2013.
+
+\bibitem{Xu2015Adaptive}
+Yong Xu and Yuwu Lu.
+\newblock Adaptive weighted fusion: A novel fusion approach for image
+  classification.
+\newblock {\em Neurocomputing}, 168:566--574, 2015.
+
+\bibitem{Yao2016HoloNet}
+Anbang Yao, Dongqi Cai, Ping Hu, Shandong Wang, Liang Sha, and Yurong Chen.
+\newblock Holonet: towards robust emotion recognition in the wild.
+\newblock In {\em ACM International Conference on Multimodal Interaction},
+  pages 472--478, 2016.
+
+\bibitem{Yao2015Capturing}
+Anbang Yao, Junchao Shao, Ningning Ma, and Yurong Chen.
+\newblock Capturing au-aware facial features and their latent relations for
+  emotion recognition in the wild.
+\newblock In {\em ACM on International Conference on Multimodal Interaction},
+  pages 451--458, 2015.
+
+\bibitem{MTCNN}
+Kaipeng Zhang, Zhanpeng Zhang, Zhifeng Li, and Yu~Qiao.
+\newblock Joint face detection and alignment using multitask cascaded
+  convolutional networks.
+\newblock {\em IEEE Signal Processing Letters}, 23(10):1499--1503, 2016.
+
+\end{thebibliography}

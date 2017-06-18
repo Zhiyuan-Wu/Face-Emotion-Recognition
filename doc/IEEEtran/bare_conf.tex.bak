@@ -1,0 +1,266 @@
+\documentclass[conference]{IEEEtran}
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+\usepackage{cite}
+\bibliographystyle{plain}
+\newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}}
+\newcommand{\eqref}[1]{Eq.(\ref{#1})}
+
+\begin{document}
+
+\title{More Accurate Facial Emotion Recognition}
+
+\author{\IEEEauthorblockN{Zhiyuan Wu}
+\IEEEauthorblockA{Department of Electronic Engineering\\
+Tsinghua University\\
+wuzy14@mails.tsinghua.edu.cn}
+\and
+\IEEEauthorblockN{Yuwei Qiu}
+\IEEEauthorblockA{Department of Electronic Engineering\\
+Tsinghua University\\
+qyw14@mails.tsinghua.edu.cn}
+\and
+\IEEEauthorblockN{Xuechao Wang}
+\IEEEauthorblockA{Department of Electronic Engineering\\
+Tsinghua University\\
+xuech14@mails.tsinghua.edu.cn}
+}
+
+\maketitle
+
+\begin{abstract}
+Automatic analysis of human emotion from images is a challenging problem and has attracted interests of researchers for a long time. Many sophisticated models with impressively high accuracy have been reported, but most of which are not able to generalize well. In this paper, we describe a multi-model approach for image-based automatic facial emotion recognition. We combine various feature extractors including many pixel level descriptors and deep CNN features through multi-stage transfer learning. We also investigate different model fusion approaches. We employ a conjunctional training on many different datasets and get state-of-the-art accuracy as well as good generalization capability.
+\end{abstract}
+
+\section{Introduction}
+Automatic facial emotion recognition is a popular and challenging problem in the research fields of computer vision, human-computer interaction, pattern recognition and so on. Specifically, the goal of facial emotion recognition task is to classify a picture that contains a facial expression into one of eight emotion classes: Angry, Disgust, Fear, Sadness, Happy, Surprise, Contempt, and Neutral.
+
+Facial emotion recognition task on image datasets collected in "Lab-controlled" environment has been well studied and many impressive methods and results have been reported. Compared to "In-wild" datasets that are mainly captured from film clips, these datasets have advantages like larger dataset size and higher signal-to-noise ratio, bringing the benefits that the cognitive mechanism is more straightforward and different methods can be implemented and compared easily.
+
+This task has attracted many researchers, and numerous outstanding methods have been reported. These methods can be divided into several categories according to different approaches to extract discriminative features. Many researchers use different pixel level descriptors in order to catch the shape of facial parts like eyes or mouth, as well as the shape and direction of skin wrinkle, which intuitively contains rich emotion information. Beside widely used descriptors like HOG, SIFT and LBP etc., many hand crafted features like geometry feature are also explored. See \cite{Kaya2017Video,Kaya2015Contrasting,Saeed2012Effective}. Some researchers are interested in Facial Action Coding System(FACS), which was developed in Anatomy and try to explain the complex mechanism of human facial expressions and the connections between facial expressions and emotion that stands for. They analyze facial expressions and transfer it into a combination of several Action Units(AUs), and then translate it into certain emotion. See \cite{Yao2015Capturing,Bartlett2005Recognizing}. By recent years, more and more researchers preferred deep learning approaches to extract deep level description of emotion. Deep models like Convolutional Neutral Networks(CNN), Deep Belief Networks(DBN), and their structural variation are widely used. These models outperform previous method by a large margin. See \cite{Kahou2013Combining,Fan2016Video,Yao2016HoloNet}. There also exist other methods like to rebuild 3-D face model.
+
+Related works also include studies that focus on emotion recognition in videos. In the challenge like The EmotiW \cite{Dhall2016EmotiW} researchers need consider not only the feature extraction and recognition of single frame images, but also the combination of spatial and temporal information, as well as the analysis of audio. The emotion analysis of single frame is the core of these works and method they used are very similar to methods mentioned above. And relevance analysis method like Three Orthogonal Planes (TOP) \cite{Kaya2017Video} or deep neural networks based method like RNN \cite{Kahou2015Recurrent} or LSTM are used to add temporal information into consideration. These works are beset by the complex environment change and high noise level, thus it is convenient and important to focus on facial emotion recognition in static images.
+
+However, these method suffer a common flaw. In order to get a high recognition accuracy, researchers have to be an expert at parameters tuning and use many sophisticated tricks. This often result in poor generalization capability of the model. People have to build different model for different dataset. In this paper, we try to solve this problem by combining various model and deploying a conjunctional training on various datasets, and achieve more accurate facial emotion recognition.
+
+More precisely, our contributions are as follows:
+\begin{itemize}
+\item We explore a multi-model approach for facial emotion recognition task, combining many popular and powerful models all-in-one, including pixel level descriptors HOG, Dense-SIFT, LBP, LPQ, and a multi-stage fine-tuning CNN. Further more, we explore many different model fusion method.
+\item We deploy a conjunctional training on many different datasets, which enable our model to generalize well. We further test our model on a new dataset collected by ourself.
+\item We achieve state-of-the-art accuracy on some publicly available datasets.
+\end{itemize}
+
+The remainder of this paper are as follows. In section \ref{sec:method} we introduce the overview of our automatic facial emotion recognition system, give a introduction to different feature extraction methods that we have used, and investigate different model fusion method. In section \ref{sec:exp} we put some experiment settings and main results. Section \ref{sec:con} is a brief conclusion.
+
+\section{The Proposed Method}
+\label{sec:method}
+The proposed pipeline is illustrated in figure. For an input image sampled from database or grabbed from video stream, after some basic image preprocessing, a face detector is used to find the face region. Then different feature extractors are used to compute discriminative features, and a set of classifiers compute corresponding posterior probability distributions based on those features in parallel. And at last a decision layer give a emotion label to the input image. We will make a detailed discussion for each components in the following subsections.
+
+\subsection{Preprocessing and Face detection}
+Before performing face detection, we implement some basic image preprocessing procedure. We reduce the size of some high resolution images so that they can be processed faster, and we force the number of color channels to 3 by simply copying intensity value to each RGB channel, in order to fit the input requirement of deep network used. In training phase, many popular data augmentation method are used to extend datasets. We randomly flip the image horizontally and rotate the image by an angle between $-40^{\circ}$ and $40^{\circ}$ in increasement of $10^{\circ}$, and random gaussian noise is added. These preprocessing method allow our model to avoid overfitting to some extent and increase the ability of generalization.
+
+Face detection and registration is one of the most important steps in face image processing. The goal of this procedure is to propose a region that contain human face. There exist two strategies of face alignment that are mixture of parts(MoP) and deformable parts model(DPM)\upcite{Kaya2017Video}. Figure shows examples of MoP- and DPM-based alignment. As we will show later, the DPM alignment is coarser and gives better results with CNN model, as in this case the images are more similar to the imaging conditions for pretraining and fine-tuning of the CNN model. But other visual descriptors work better with MoP.
+
+Considering face detectors that is based on deep neural network architecture have reported better performance, we use work of \cite{MTCNN} for actual face detection. In our test it outperform other detectors like \cite{Chen2014Joint,Ramanan2012Face} or Haar Cascade Filter in both accuracy and compute speed.
+
+\subsection{Visual Descriptors}
+\subsubsection{CNN}
+Because of the recent success of deep CNN approaches, we integrate pre-trained CNN models into our method. One of the important reason that CNN can be successfully used in various computer vision task like image classification is the support of huge-size datasets like ImageNet. And CNN suffer the over-fitting problem on relatively small datasets. One way of getting around this problem is using pre-trained CNN models for visual feature extraction and using transfer learning to adapt the models to the particular application.\cite{Ng2015Deep,Razavian2014CNN} And many similar works on image emotion recognition like \cite{Kim2016Hierarchical} confirm that this approach is indeed effective.
+
+Inspaired by \cite{Kaya2017Video}, we propose a multi-stage fine-tuning strategy to get a CNN model having better performance and generalization capability. More specifically, we start from the VGG-Face model that is trained for face recognition \cite{VGGFace}, and then apply the FER 2013 \cite{Goodfeli-et-al-2013} emotion corpus for the fine tuning. Here we make a hypothesis that on this task VGG-Face will work better than models pre-trained on ImageNet, which is developed for general object classification. We then use Public Test set of FER2013 for 5 epoches stage-1 fine-tuning. After locking the parameters of layer before conv5, we use Private Test set of FER2013 for another 10 epoches stage-2 fine-tuning. Then we use a combination of some public datasets (See Experiment section for details) for a longer fine-tuning as last stage with all parameters be able to update. All procedure mentioned above are under the Dropout and weight decay regularization.
+
+We use a Caffe \cite{Jia2014Caffe} implementation of VGG-Face, the architecture of the network is illustrated in figure, where the main part of network has not been modified during whole fine-tune procedure except that the size of last two full connected layer is adjusted according to different class number on different datasets.
+
+\subsubsection{HOG}
+The histogram of oriented gradients (HOG) \cite{Dalal2005Histograms} feature describes the local shape and appearance of objects by capturing the distribution information of intensity gradients. The descriptor decomposes a local region into small squared cells, and computes the histogram of different bins of oriented gradients in each cell, and normalizes the result using block-wise style. Then features from different local regions are concatenated spatially.
+
+HOG has been widely used in many computer vision task, especially in pedestrian detecting. It is a consensus that the shape of face components like eyes and mouth and the direction of skin wrinkles contains rich information of emotion. Because HOG can well capture the direction changes of edges so HOG is believed to be a good feature to represent emotion.
+
+In our model, we deploy HOG similarly to that described in \cite{Liu2016Video}, where we resize each image to $64\times64$ pixels, and divide them into $7\times7=49$ overlapping blocks with size of $16\times16$ pixels(i.e. the strides are 8 pixels in both horizontal and vertical directions). The descriptor is applied by computing histograms of oriented gradient on $2\times2$ cells in each block, and the orientations are quantized into 9 bins, which result in $2\times2\times9\times49=1764$ dimensions for the whole image.
+
+\subsubsection{Dense SIFT}
+The scale-invariant feature transform(SIFT)\cite{Lowe2004Distinctive} combines a feature detector and a feature descriptor. The detector extracts a number of interested points from an image in a way that is consistent with some variations of the illumination or viewpoint. The descriptor associates to the region around each point a signature which identifies its appearance compactly and robustly. For dense SIFT, it is equivalent to performing SIFT descriptor directly on a dense grid of locations on a image at a fixed scale and orientation. SIFT is one of the most successful visual descriptors in various computer vision task for decades, and many work in emotion recognition report its good performance.
+
+In our model, again we divide each image into 49 overlapping regions as described in HOG. In each local block, we apply the SIFT descriptor to the center point, and finally get a $4\times4\times8\times49=6272$ dimensions feature for the whole image.
+
+\subsubsection{LBP}
+Local Binary Patterns (LBP) \cite{LBP2014} computation amounts to finding the sign of difference with respect to a central pixel in a neighborhood, and transforms the binary pattern into an integer and finally converting the patterns in to a histogram. So LBP is believed to be able to capture the surface texture of object. A useful extension of original LBP is uniform LBP, which clusters 256 patterns into 59 bins, and takes into account occurrence statistics of common patterns.
+
+In our model, LBP is also applied on 49 local regions grid, and finally get a $59\times49=2891$ dimensions feature for each images.
+
+Note that there is a variant version of LBP method called Local Gabor Binary Patterns (LGBP), where the images are convolved with a set of 2D complex Gabor filters to obtain Gabor-pictures, then LBP is applied to each Gabor-picture and those features are concatenated as output. LGBP has been reported to have similar process style with human primary visual cortex \cite{visual1980} and it has slightly better performance in some task. We tried to add LGBP as another visual descriptor but it came to a problem that the parameters of Gabor filters is hard to be consolidated on different datasets.
+
+\subsubsection{LPQ}
+The Local Phase Quantization (LPQ) features are computed by taking 2-D Discrete Fourier Transform(DFT) of M-by-M neighborhoods of each pixel in the gray scale image. 2D-DFT is computed at four frequencies $\{[a,0]^T,[0,a]^T,[a,a]^T,[a,-a]^T\}$ with $a=1/M$, which correspond to four of eight neighboring frequency bins centered at the pixel of interest. The real and imaginary parts of resulting four complex numbers are separately quantized using a threshold of zero, which gives an eight bit string. This string is then converted into an integer value in the range of $[0,255]$. The pixel based values are Finally converted into a histogram of 256 bins. LPQ features have been successfully used in emotion recognition problems, and it serve as baseline in the AVEC 2013 Challenge. And therefore we believe it can be a powerful feature.
+
+In our model, LPQ is also applied on 49 local regions grid(i.e. with $M=16$), and finally get a $256\times49=12544$ dimensions feature for each images.
+
+\subsection{Classifiers}
+Once all visual features mentioned above are ready, numerous classifiers can be chosen to compute posterior probability distribution on different emotion class given those visual features, denoted by $p(c_i\mid \{x_j\})$, where $c_i$ denote one of eight target emotions and $\{x_j\}$ denote the set of computed visual features from different descriptors.
+
+In our model, we mainly use two popular classifiers. For pixel level descriptors HOG, Dense SIFT, LPB, and LPQ, Support Vector Machine (SVM) with radial basis function (RBF) kernel:
+\begin{equation}
+\label{eq:kernel}
+\mathcal{K}(x_i,x_j)=exp(-\gamma \Arrowvert x_i-x_j\Arrowvert ^2)
+\end{equation}
+are used to compute $p(c_i\mid x_j)$ correspondingly, and kernel parameters such as $\gamma $ in \eqref{eq:kernel} and $\mathcal{C}$ in loss function are greedily search on a grid of exponential powers of 2. Randomly pick a specific parameters setting, and move to a nearby point that have higher accuracy on validation set. Do this procedure for several times and record the parameters with highest accuracy on validation set.
+
+For CNN model, we use a two layer full connected perception to convert deep CNN features of convolutional layers to posterior probability distribution. A combination of Dropout and weight decay is used to avoid overfiting.
+
+Note that there exist some works where researchers use SVM or other classifiers to deal with CNN features and some of them report slightly better result. But in our test they are almost identical in performance, and for convenience, we directly use the full connect layer implementation of Caffe.
+\subsection{Model Fusion}
+\cite{Xu2015Adaptive} explores various approaches used in model fusion. Those method can be divided into three categories according to the fusion level. \emph{Feature level fusion} concatenate the features derived from multi-source and apply an uniform classifier to get the result. Feature level fusion is able to exploit the most information of the original data, but it is beset by the problem that different kinds of features might be inconsistent and incompatible in dimensional variance, and the dimensionality might be too high to be classified efficiently. \emph{Decision level fusion} is very easy to implement and different source classifiers vote for the final output. However, it does not allow the multi-source information to be fully exploited because the decision only contains a label number and too much detailed information are lost. \emph{Score level fusion} is a compromise between two approaches above. It can be considered as the evaluation of $p(c_i\mid \{x_j\})$ according to $\{p(c_i\mid x_j)\}$ from multi-source classifiers.
+
+As a result, fusion at the score level is a good way and is what we mainly focus on. More specifically, there are mainly two methods to apply score level fusion:
+
+\subsubsection{The Product Rule}
+If we make the assumption that the features form different source are conditionally independent given the ground truth label, i.e.
+\begin{equation}
+\label{eq:condindep}
+p(x_j\mid c)\perp p(x_i\mid c)
+\end{equation}
+where $i\neq j$ and $\perp$ denote statistical independent. Then the relationship of label $c$ and observed features set $\{x_i\}$ can be described by a tree structured Bayesian graphic model, where $c$ is the root node and $\{x_i\}$ are leaf nodes. After converting it to a factor graph, the posterior probability distribution can be exactly inferred by the Product-Sum algorithm:
+\begin{equation}
+\label{eq:prodrule}
+p(c_i\mid \{x_j\})=\prod_j p(c_i\mid x_j)
+\end{equation}
+
+\subsubsection{The Sum Rule}
+Besides the same assumption described by \eqref{eq:condindep}, The Sum Rule also assumes that posterior distribution computed by the individual classifiers do not deviate much from the prior probabilities, then the posterior probability can be approximately inferred by:
+\begin{equation}
+\label{eq:sumrule}
+p(c_i\mid \{x_j\})=\frac{1}{C}\sum_j p(c_i\mid x_j)
+\end{equation}
+
+There a variant of The Sum Rule in technical implementation which is popular and effective, called The Weighted Fusion approach. It add a weight term to \eqref{eq:sumrule} and can be written as:
+\begin{equation}
+\label{eq:wf}
+p(c_i\mid \{x_j\})=\frac{1}{C}\sum_j w_{ij}p(c_i\mid x_j)
+\end{equation}
+with
+\[ \sum_j w_{ij}=1 \]
+holds. A very popular setting in various pattern recognition tasks is $w_{ij}\equiv w_j$ which are manually selected as a set of hyperparameters. The Weighted Fusion approach can often make a big improvement on multi-model systems and many state-of-the-art work on facial emotion recognition rely on it.
+
+However, $w_{ij}$ is very hard to evaluate. Some researchers simply randomly generate and choose one \cite{Kaya2017Video}, while some researchers optimize it on validation set or even train a more complex classifiers like SVM. Though this approach can significantly improve the performance like accuracy on certain datasets, it also brings the problem like over-fit to validation set and poorly generalize.
+
+In our model, we tried all these fusion method and choose Weighted Fusion approach with $w_{ij}\equiv w_j$, for the consideration of tradeoff between accuracy and generalization capability.
+
+Finally, our model choose a emotion label that can maximize the computed posterior probability distribution as the prediction:
+\begin{equation}
+\label{eq:pred}
+\hat{c}=\mathop{\arg\max}_{c_i} p(c_i\mid \{x_j\})
+\end{equation}
+
+\section{Experiment}
+\label{sec:exp}
+We test our model on numerous popular facial emotion datasets, and compare our results with some state-of-the-art works. Further more, we introduce a new datasets provided by \emph{Media and Cognition} course from Tsinghua University, China. We test the generalization capability of our method on this new datasets.
+
+\subsection{Datasets}
+
+\subsubsection{CK+}
+The Extended Cohn-Kanade AU-Coded Facial Expression Database, referred as CK+ \cite{Lucey2010The}, is a popular benchmark for research in automatic facial image analysis and synthesis and for perceptual studies. The dataset includes 486 sequences from 97 posers, and part of which are manually labeled into eight emotions without confusion. Finally 445 images at peak frames of labeled sequences are used in our experiment.
+
+\subsubsection{TFEID}
+The Taiwanese Facial Expression Image Database (TFEID) \cite{Chen2007TFEID} is a large lab-collected facial emotion dataset, consisting of 7200 stimuli captured from 40 models (20 males), each with eight facial expressions. Models were asked to gaze at two different angles. Each expression includes two kinds of intensities (high and slight) and was captured by two CCD-cameras simultaneously with different viewing angles. In our experiment, only images captured at front view with high intensities are used.
+
+\subsubsection{JAFFE}
+The Japanese Female Facial Expression (JAFFE) Database \cite{Lyons2002Automatic} contains 213 images of 7 facial expressions (without \emph{Contempt} Emotion in CK+ and TFEID) posed by 10 Japanese female models. In our experiment, it is extended to eight emotions in order to keep consistent with other datasets, by simply adding an empty label set.
+
+\subsubsection{KDEF}
+The Karolinska Directed Emotional Faces (KDEF) \cite{Lundqvist1998The} is a set of totally 4900 pictures of human facial expressions of emotion, which was originally developed to be used for psychological and medical research purposes. The set contains 70 individuals, each displaying 7 different emotional expressions, each expression being photographed (twice) from 5 different angles. In our experiment, we only pick images captured at front view and also extend it to eight emotions by introducing an empty \emph{Contempt} set.
+
+\subsubsection{Newly Collected Dataset}
+Many models introduced by previous works can not generalize well to other datasets or images that are "In-Wild" style. To test the generalization capability of our model, we use the dataset provided by \emph{Media and Congnition} course from Tsinghua University, which contains images captured from students and images collected from Internet. Compared to datasets mentioned above, this newly collocated dataset is more authentic and living, rather than obvious spurious performance. So its a perfect dataset to test the generalization capability of facial emotion recognition systems. It consists approximately 1000 images and are manually labeled into same eight emotion classes.
+
+\subsection{Training}
+The amount of data provided to model training has been proved in many computer vision and pattern recognition tasks to be a significant factor that influences the performance of model. In consideration of that, we apply a conjunctional training procedure on our model. Instead of separately using each datasets, we combine all datasets mentioned above all-in-one to maximize the size of datasets used for training.
+
+The number of images in five datasets adds up to approximately 2k, and 12k after augmentation. We use a random 5-folds cross validation approach for data segmentation. And all data are used for training with same hyperparameters in submission version of our systems. Compared to existing works where single dataset with size up to 1k is used for training, this conjunctional training approach can significantly improve the performance of our system, especially CNN part.
+
+\subsection{Result}
+\subsubsection{Comparison of Different extractors}
+First we introduce some result obtained on a simplified version of our system. More specifically, in order to show the performance improvement introduced by multi-model approach, we first test different feature extractors. We only used CK+ datasets and no augmentation is applied in this test.
+
+Result is shown in TABLE \ref{tb:feature}. It can be concluded that different pixel level feature extractors have similar performance on small dataset, and SIFT is slightly better than others. Deep neural networks is not good enough because the limit of dataset size (0.5k only).
+
+\subsubsection{Comparison of Different fusion method}
+In order to show the improvement obtained by different fusion method, we combine several pixel level by different fusion style. This time the model is trained on the combination of five datasets mentioned above, but still without any augmentation process.
+
+Result is shown in TABLE \ref{tb:fusion}. We observe that these pixel level feature extraction methods have a obvious decrease in performance on the joint data set. This is mainly because these pixel level descriptors can not generalize well to newly collected dataset, so overall accuracy has decreased. Dense-SIFT is still slightly better than others. The Sum Fusion Rule has a very similar performance with the Product Fusion Rule, they improve the accuracy by 2.5\% above Dense-SIFT. Weighted Fusion approach can further give another 3\% improvement which indicates that the Weighted Fusion approach is an expert at accuracy improving.
+
+\subsubsection{Complete Model Test on CK+}
+Finally, we apply a complete version of our system described in Section \ref{sec:method}, i.e. we train our model on the joint dataset after fully augmentation. We observed a remarkable improvement of CNN approach under this setting ($87\%\to92\%$), and finally Weighted Fusion is used for further boosting.
+
+CK+ is one of the most popular dataset used as a benchmark for facial emotion recognition task. We report competitive performance on CK+ datasets. See TABLE \ref{tb:CK} for detail.
+\begin{table}[!t]
+\caption{Comparison of Different extractors}
+\label{tb:feature}
+\centering
+\begin{tabular}{c|c}
+\hline
+Method & Accuracy\\
+\hline
+HOG & 87.64\%\\
+\hline
+LPQ & 82.02\%\\
+\hline
+LBP & 83.15\%\\
+\hline
+Dense SIFT & 89.89\%\\
+\hline
+CNN & 85.55\%\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!t]
+\caption{Comparison of Different Fusion Method}
+\label{tb:fusion}
+\centering
+\begin{tabular}{c|c}
+\hline
+Method & Accuracy\\
+\hline
+HOG & 78.84\%\\
+\hline
+LPQ & 74.90\%\\
+\hline
+LBP & 77.59\%\\
+\hline
+Dense SIFT & 82.16\%\\
+\hline
+Sum Rule & 84.65\%\\
+\hline
+Product Rule & 84.44\%\\
+\hline
+Weighted Fusion & 87.23\%\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[!t]
+\caption{Overall Accuracy Comparison on CK+}
+\label{tb:CK}
+\centering
+\begin{tabular}{c|c}
+\hline
+Method & Accuracy\\
+\hline
+\cite{Wang2013Capturing} & 88.80\%\\
+\hline
+\cite{Liu2014Deeply} & 92.40\%\\
+\hline
+\textbf{Ours} & \textbf{94.38}\%\\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Conclusion}
+\label{sec:con}
+Automatic analysis of human emotion from images is a challenging problem. In this paper, we emphasize the importance of deeper analysis of emotion recognition on lab-collected images rather than on other noisy way. We propose a multi-model approach for more accurate automatic facial emotion recognition on static images. In our system, we combine four different pixel level image descriptor: HOG, LBP, LPQ, and Dense-SIFT, and a multi-stage fine-tuned CNN. We apply a data augmentation and conjunctional training procedure in order to make fully use of large amount of data. We also investigate different model fusion methods. Our model is proved to effective and have a better generalization capability than previous work through many experiments. We report better generalization capability by testing our model on a newly collected dataset and competitive accuracy on CK+ to many other state-of-the-art works.
+
+\bibliography{ref}
+\end{document}
+
